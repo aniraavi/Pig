@@ -1,0 +1,328 @@
+Max:-
+
+grunt> std = load '/home/cloudera/input.txt' using PigStorage(',') as (id:int,fname:chararray,lname:chararray,age:int,mobile:chararray,city:chararray,gpa:int);
+grunt> describe std;
+std: {id: int,fname: chararray,lname: chararray,age: int,mobile: chararray,city: chararray,gpa: int}
+grunt> dump std;
+(1,Rajiv,Reddy,21,9848022337,Hyderabad,89)
+(2,siddarth,Battacharya,22,9848022338,Kolkata,78)
+(3,Rajesh,Khanna,22,9848022339,Delhi,90)
+(4,Preethi,Agarwal,21,9848022330,Pune,93)
+(5,Trupthi,Mohanthy,23,9848022336,Bhuwaneshwar,75)
+(6,Archana,Mishra,23,9848022335,Chennai,87)
+(7,Komal,Nayak,24,9848022334,trivendram,83)
+(8,Bharathi,Nambiayar,24,9848022333,Chennai,72)
+#Global Maximum
+grunt> std_groupall = group std all;
+grunt> describe std_groupall;
+std_groupall: {group: chararray,std: {(id: int,fname: chararray,lname: chararray,age: int,mobile: chararray,city: chararray,gpa: int)}}
+grunt> dump std_groupall;
+(all,{(8,Bharathi,Nambiayar,24,9848022333,Chennai,72),(7,Komal,Nayak,24,9848022334,trivendram,83),(6,Archana,Mishra,23,9848022335,Chennai,87),(5,Trupthi,Mohanthy,23,9848022336,Bhuwaneshwar,75),(4,Preethi,Agarwal,21,9848022330,Pune,93),(3,Rajesh,Khanna,22,9848022339,Delhi,90),(2,siddarth,Battacharya,22,9848022338,Kolkata,78),(1,Rajiv,Reddy,21,9848022337,Hyderabad,89)})
+grunt> max_gpa = foreach std_groupall generate (std.id,std.fname,std.lname,std.age,std.mobile,std.city,std.gpa),MAX(std.gpa) as max_gpa;
+grunt> describe max_gpa;
+max_gpa: {org.apache.pig.builtin.totuple_5: ({(id: int)},{(fname: chararray)},{(lname: chararray)},{(age: int)},{(mobile: chararray)},{(city: chararray)},{(gpa: int)}),max_gpa: int}
+grunt> dump max_gpa;
+(({(8),(7),(6),(5),(4),(3),(2),(1)},{(Bharathi),(Komal),(Archana),(Trupthi),(Preethi),(Rajesh),(siddarth),(Rajiv)},{(Nambiayar),(Nayak),(Mishra),(Mohanthy),(Agarwal),(Khanna),(Battacharya),(Reddy)},{(24),(24),(23),(23),(21),(22),(22),(21)},{(9848022333),(9848022334),(9848022335),(9848022336),(9848022330),(9848022339),(9848022338),(9848022337)},{(Chennai),(trivendram),(Chennai),(Bhuwaneshwar),(Pune),(Delhi),(Kolkata),(Hyderabad)},{(72),(83),(87),(75),(93),(90),(78),(89)}),93)
+#Maximum Value of a Group
+grunt> group_by_city = group std by city;
+grunt> describe group_by_city;
+group_by_city: {group: chararray,std: {(id: int,fname: chararray,lname: chararray,age: int,mobile: chararray,city: chararray,gpa: int)}}
+grunt> dump group_by_city;
+(Pune,{(4,Preethi,Agarwal,21,9848022330,Pune,93)})
+(Delhi,{(3,Rajesh,Khanna,22,9848022339,Delhi,90)})
+(Chennai,{(8,Bharathi,Nambiayar,24,9848022333,Chennai,72),(6,Archana,Mishra,23,9848022335,Chennai,87)})
+(Kolkata,{(2,siddarth,Battacharya,22,9848022338,Kolkata,78)})
+(Hyderabad,{(1,Rajiv,Reddy,21,9848022337,Hyderabad,89)})
+(trivendram,{(7,Komal,Nayak,24,9848022334,trivendram,83)})
+(Bhuwaneshwar,{(5,Trupthi,Mohanthy,23,9848022336,Bhuwaneshwar,75)})
+grunt> max_gpa_by_city = foreach group_by_city generate (std.id,std.fname,std.ln
+grunt> describe max_gpa_by_city;
+max_gpa_by_city: {org.apache.pig.builtin.totuple_33: ({(id: int)},{(fname: chararray)},{(lname: chararray)},{(age: int)},{(mobile: chararray)},{(city: chararray)},{(gpa: int)}),max_gpa: int}
+grunt> dump max_gpa_by_city;
+(({(4)},{(Preethi)},{(Agarwal)},{(21)},{(9848022330)},{(Pune)},{(93)}),93)
+(({(3)},{(Rajesh)},{(Khanna)},{(22)},{(9848022339)},{(Delhi)},{(90)}),90)
+(({(8),(6)},{(Bharathi),(Archana)},{(Nambiayar),(Mishra)},{(24),(23)},{(9848022333),(9848022335)},{(Chennai),(Chennai)},{(72),(87)}),87)
+(({(2)},{(siddarth)},{(Battacharya)},{(22)},{(9848022338)},{(Kolkata)},{(78)}),78)
+(({(1)},{(Rajiv)},{(Reddy)},{(21)},{(9848022337)},{(Hyderabad)},{(89)}),89)
+(({(7)},{(Komal)},{(Nayak)},{(24)},{(9848022334)},{(trivendram)},{(83)}),83)
+(({(5)},{(Trupthi)},{(Mohanthy)},{(23)},{(9848022336)},{(Bhuwaneshwar)},{(75)}),75)
+
+Min:-
+
+grunt> std = load '/home/cloudera/input.txt' using PigStorage(',') as (id:int,fname:chararray,lname:chararray,age:int,mobile:chararray,city:chararray,gpa:int);
+grunt> describe std;
+std: {id: int,fname: chararray,lname: chararray,age: int,mobile: chararray,city: chararray,gpa: int}
+grunt> dump std;
+(1,Rajiv,Reddy,21,9848022337,Hyderabad,89)
+(2,siddarth,Battacharya,22,9848022338,Kolkata,78)
+(3,Rajesh,Khanna,22,9848022339,Delhi,90)
+(4,Preethi,Agarwal,21,9848022330,Pune,93)
+(5,Trupthi,Mohanthy,23,9848022336,Bhuwaneshwar,75)
+(6,Archana,Mishra,23,9848022335,Chennai,87)
+(7,Komal,Nayak,24,9848022334,trivendram,83)
+(8,Bharathi,Nambiayar,24,9848022333,Chennai,72)
+#Global Minimum
+grunt> std_groupall = group std all;
+grunt> describe std_groupall;
+std_groupall: {group: chararray,std: {(id: int,fname: chararray,lname: chararray,age: int,mobile: chararray,city: chararray,gpa: int)}}
+grunt> dump std_groupall;
+(all,{(8,Bharathi,Nambiayar,24,9848022333,Chennai,72),(7,Komal,Nayak,24,9848022334,trivendram,83),(6,Archana,Mishra,23,9848022335,Chennai,87),(5,Trupthi,Mohanthy,23,9848022336,Bhuwaneshwar,75),(4,Preethi,Agarwal,21,9848022330,Pune,93),(3,Rajesh,Khanna,22,9848022339,Delhi,90),(2,siddarth,Battacharya,22,9848022338,Kolkata,78),(1,Rajiv,Reddy,21,9848022337,Hyderabad,89)})
+grunt> min_gpa = foreach std_groupall generate (std.id,std.fname,std.lname,std.age,std.mobile,std.city,std.gpa),MIN(std.gpa) as min_gpa;
+grunt> describe min_gpa;
+min_gpa: {org.apache.pig.builtin.totuple_5: ({(id: int)},{(fname: chararray)},{(lname: chararray)},{(age: int)},{(mobile: chararray)},{(city: chararray)},{(gpa: int)}),min_gpa: int}
+grunt> dump min_gpa;
+(({(8),(7),(6),(5),(4),(3),(2),(1)},{(Bharathi),(Komal),(Archana),(Trupthi),(Preethi),(Rajesh),(siddarth),(Rajiv)},{(Nambiayar),(Nayak),(Mishra),(Mohanthy),(Agarwal),(Khanna),(Battacharya),(Reddy)},{(24),(24),(23),(23),(21),(22),(22),(21)},{(9848022333),(9848022334),(9848022335),(9848022336),(9848022330),(9848022339),(9848022338),(9848022337)},{(Chennai),(trivendram),(Chennai),(Bhuwaneshwar),(Pune),(Delhi),(Kolkata),(Hyderabad)},{(72),(83),(87),(75),(93),(90),(78),(89)}),72)
+#Minimum Value of a Group
+grunt> group_by_city = group std by city;
+grunt> describe group_by_city;
+group_by_city: {group: chararray,std: {(id: int,fname: chararray,lname: chararray,age: int,mobile: chararray,city: chararray,gpa: int)}}
+grunt> dump group_by_city;
+(Pune,{(4,Preethi,Agarwal,21,9848022330,Pune,93)})
+(Delhi,{(3,Rajesh,Khanna,22,9848022339,Delhi,90)})
+(Chennai,{(8,Bharathi,Nambiayar,24,9848022333,Chennai,72),(6,Archana,Mishra,23,9848022335,Chennai,87)})
+(Kolkata,{(2,siddarth,Battacharya,22,9848022338,Kolkata,78)})
+(Hyderabad,{(1,Rajiv,Reddy,21,9848022337,Hyderabad,89)})
+(trivendram,{(7,Komal,Nayak,24,9848022334,trivendram,83)})
+(Bhuwaneshwar,{(5,Trupthi,Mohanthy,23,9848022336,Bhuwaneshwar,75)})
+grunt> min_gpa_by_city = foreach group_by_city generate (std.id,std.fname,std.lname,std.age,std.mobile,std.city,std.gpa),MIN(gpa) as min_gpa;
+grunt> describe min_gpa_by_city;
+min_gpa_by_city: {org.apache.pig.builtin.totuple_33: ({(id: int)},{(fname: chararray)},{(lname: chararray)},{(age: int)},{(mobile: chararray)},{(city: chararray)},{(gpa: int)}),min_gpa: int}
+grunt> dump min_gpa_by_city;
+(({(4)},{(Preethi)},{(Agarwal)},{(21)},{(9848022330)},{(Pune)},{(93)}),93)
+(({(3)},{(Rajesh)},{(Khanna)},{(22)},{(9848022339)},{(Delhi)},{(90)}),90)
+(({(8),(6)},{(Bharathi),(Archana)},{(Nambiayar),(Mishra)},{(24),(23)},{(9848022333),(9848022335)},{(Chennai),(Chennai)},{(72),(87)}),72)
+(({(2)},{(siddarth)},{(Battacharya)},{(22)},{(9848022338)},{(Kolkata)},{(78)}),78)
+(({(1)},{(Rajiv)},{(Reddy)},{(21)},{(9848022337)},{(Hyderabad)},{(89)}),89)
+(({(7)},{(Komal)},{(Nayak)},{(24)},{(9848022334)},{(trivendram)},{(83)}),83)
+(({(5)},{(Trupthi)},{(Mohanthy)},{(23)},{(9848022336)},{(Bhuwaneshwar)},{(75)}),75)
+
+Count:-
+grunt> std = load '/home/cloudera/input.txt' using PigStorage(',') as (id:int,fname:chararray,lname:chararray,age:int,mobile:chararray,city:chararray,gpa:int);
+grunt> describe std;
+std: {id: int,fname: chararray,lname: chararray,age: int,mobile: chararray,city: chararray,gpa: int}
+grunt> dump std;
+(1,Rajiv,Reddy,21,9848022337,Hyderabad,89)
+(2,siddarth,Battacharya,22,9848022338,Kolkata,78)
+(3,Rajesh,Khanna,22,9848022339,Delhi,90)
+(4,Preethi,Agarwal,21,9848022330,Pune,93)
+(5,Trupthi,Mohanthy,23,9848022336,Bhuwaneshwar,75)
+(6,Archana,Mishra,23,9848022335,Chennai,87)
+(7,Komal,Nayak,24,9848022334,trivendram,83)
+(8,Bharathi,Nambiayar,24,9848022333,Chennai,72)
+#Global Count
+grunt> std_groupall = group std all;
+grunt> describe std_groupall;
+std_groupall: {group: chararray,std: {(id: int,fname: chararray,lname: chararray,age: int,mobile: chararray,city: chararray,gpa: int)}}
+grunt> dump std_groupall;
+(all,{(8,Bharathi,Nambiayar,24,9848022333,Chennai,72),(7,Komal,Nayak,24,9848022334,trivendram,83),(6,Archana,Mishra,23,9848022335,Chennai,87),(5,Trupthi,Mohanthy,23,9848022336,Bhuwaneshwar,75),(4,Preethi,Agarwal,21,9848022330,Pune,93),(3,Rajesh,Khanna,22,9848022339,Delhi,90),(2,siddarth,Battacharya,22,9848022338,Kolkata,78),(1,Rajiv,Reddy,21,9848022337,Hyderabad,89)})
+grunt> global_count = foreach std_groupall generate COUNT(std.id) as global_count;
+grunt> describe global_count;
+global_count: {global_count: long}
+grunt> dump global_count;
+(8)
+#Count By Group
+grunt> group_by_city = group std by city;
+grunt> describe group_by_city;
+group_by_city: {group: chararray,std: {(id: int,fname: chararray,lname: chararray,age: int,mobile: chararray,city: chararray,gpa: int)}}
+grunt> dump group_by_city;
+(Pune,{(4,Preethi,Agarwal,21,9848022330,Pune,93)})
+(Delhi,{(3,Rajesh,Khanna,22,9848022339,Delhi,90)})
+(Chennai,{(8,Bharathi,Nambiayar,24,9848022333,Chennai,72),(6,Archana,Mishra,23,9848022335,Chennai,87)})
+(Kolkata,{(2,siddarth,Battacharya,22,9848022338,Kolkata,78)})
+(Hyderabad,{(1,Rajiv,Reddy,21,9848022337,Hyderabad,89)})
+(trivendram,{(7,Komal,Nayak,24,9848022334,trivendram,83)})
+(Bhuwaneshwar,{(5,Trupthi,Mohanthy,23,9848022336,Bhuwaneshwar,75)})
+grunt> count_by_city = foreach group_by_city generate std.city,COUNT(std.id) as count_by_city;
+grunt> describe count_by_city;
+count_by_city: {{(city: chararray)},count_by_city: long}
+grunt> dump count_by_city;
+({(Pune)},1)
+({(Delhi)},1)
+({(Chennai),(Chennai)},2)
+({(Kolkata)},1)
+({(Hyderabad)},1)
+({(trivendram)},1)
+({(Bhuwaneshwar)},1)
+
+Count_Star:-
+grunt> std = load '/home/cloudera/input.txt' using PigStorage(',') as (id:int,fname:chararray,lname:chararray,age:int,mobile:chararray,city:chararray,gpa:int);
+grunt> describe std;
+std: {id: int,fname: chararray,lname: chararray,age: int,mobile: chararray,city: chararray,gpa: int}
+grunt> dump std;
+(1,Rajiv,Reddy,21,9848022337,Hyderabad,89)
+(2,siddarth,Battacharya,22,9848022338,Kolkata,78)
+(3,Rajesh,Khanna,22,9848022339,Delhi,90)
+(4,Preethi,Agarwal,21,9848022330,Pune,93)
+(5,Trupthi,Mohanthy,23,9848022336,Bhuwaneshwar,75)
+(6,Archana,Mishra,23,9848022335,Chennai,87)
+(7,Komal,Nayak,24,9848022334,trivendram,83)
+(8,Bharathi,Nambiayar,24,9848022333,Chennai,72)
+(,,,,,,)
+#Global Count
+grunt> std_groupall = group std all;
+grunt> describe std_groupall;
+std_groupall: {group: chararray,std: {(id: int,fname: chararray,lname: chararray,age: int,mobile: chararray,city: chararray,gpa: int)}}
+grunt> dump std_groupall;
+(all,{(8,Bharathi,Nambiayar,24,9848022333,Chennai,72),(7,Komal,Nayak,24,9848022334,trivendram,83),(6,Archana,Mishra,23,9848022335,Chennai,87),(5,Trupthi,Mohanthy,23,9848022336,Bhuwaneshwar,75),(4,Preethi,Agarwal,21,9848022330,Pune,93),(3,Rajesh,Khanna,22,9848022339,Delhi,90),(2,siddarth,Battacharya,22,9848022338,Kolkata,78),(1,Rajiv,Reddy,21,9848022337,Hyderabad,89)})
+grunt> global_count = foreach std_groupall generate COUNT_STAR(std.id) as global_count;
+grunt> describe global_count;
+global_count: {global_count: long}
+grunt> dump global_count;
+(9)
+#Count By Group
+grunt> group_by_city = group std by city;
+grunt> describe group_by_city;
+group_by_city: {group: chararray,std: {(id: int,fname: chararray,lname: chararray,age: int,mobile: chararray,city: chararray,gpa: int)}}
+grunt> dump group_by_city;
+(Pune,{(4,Preethi,Agarwal,21,9848022330,Pune,93)})
+(Delhi,{(3,Rajesh,Khanna,22,9848022339,Delhi,90)})
+(Chennai,{(8,Bharathi,Nambiayar,24,9848022333,Chennai,72),(6,Archana,Mishra,23,9848022335,Chennai,87)})
+(Kolkata,{(2,siddarth,Battacharya,22,9848022338,Kolkata,78)})
+(Hyderabad,{(1,Rajiv,Reddy,21,9848022337,Hyderabad,89)})
+(trivendram,{(7,Komal,Nayak,24,9848022334,trivendram,83)})
+(Bhuwaneshwar,{(5,Trupthi,Mohanthy,23,9848022336,Bhuwaneshwar,75)})
+(,{(,,,,,,)})
+grunt> count_by_group = foreach group_by_city generate std.city,COUNT_STAR(std.gpa) as count_by_city;
+grunt> describe count_by_group;
+count_by_group: {{(city: chararray)},count_by_city: long}
+grunt> dump count_by_group;
+({(Pune)},1)
+({(Delhi)},1)
+({(Chennai),(Chennai)},2)
+({(Kolkata)},1)
+({(Hyderabad)},1)
+({(trivendram)},1)
+({(Bhuwaneshwar)},1)
+({()},1)
+
+Sum:-
+grunt> emp = load '/home/cloudera/employee.txt' using PigStorage(',') as (id:int,name:chararray,sal_rec_date:chararray,sal:int);
+grunt> describe emp;
+emp: {id: int,name: chararray,sal_rec_date: chararray,sal: int}
+grunt> dump emp;
+(1,John,2007-01-24,250)
+(2,Ram,2007-05-27,220)
+(3,Jack,2007-05-06,170)
+(3,Jack,2007-04-06,100)
+(4,Jill,2007-04-06,220)
+(5,Zara,2007-06-06,300)
+(5,Zara,2007-02-06,350)
+grunt> emp_groupall = group emp all;
+grunt> describe emp_groupall;
+emp_groupall: {group: chararray,emp: {(id: int,name: chararray,sal_rec_date: chararray,sal: int)}}
+grunt> dump emp_groupall;
+(all,{(5,Zara,2007-02-06,350),(5,Zara,2007-06-06,300),(4,Jill,2007-04-06,220),(3,Jack,2007-04-06,100),(3,Jack,2007-05-06,170),(2,Ram,2007-05-27,220),(1,John,2007-01-24,250)})
+grunt> global_sum = foreach emp_groupall generate SUM(emp.sal) as total_sal_drwan;
+grunt> describe global_sum;
+global_sum: {total_sal_drwan: long}
+grunt> dump global_sum;
+(1610)
+grunt> emp_group_by_id = group emp by id;
+grunt> describe emp_group_by_id;
+emp_group_by_id: {group: int,emp: {(id: int,name: chararray,sal_rec_date: chararray,sal: int)}}
+grunt> dump emp_group_by_id;
+(1,{(1,John,2007-01-24,250)})
+(2,{(2,Ram,2007-05-27,220)})
+(3,{(3,Jack,2007-04-06,100),(3,Jack,2007-05-06,170)})
+(4,{(4,Jill,2007-04-06,220)})
+(5,{(5,Zara,2007-02-06,350),(5,Zara,2007-06-06,300)})
+grunt> sum_by_id = foreach emp_group_by_id generate emp.id,SUM(emp.sal) as sal_drwan_by_emp;
+grunt> describe sum_by_id;
+sum_by_id: {{(id: int)},sal_drwan_by_emp: long}
+grunt> dump sum_by_id;
+({(1)},250)
+({(2)},220)
+({(3),(3)},270)
+({(4)},220)
+({(5),(5)},650)
+
+Diff:-
+$ cat emp_sales.txt
+1,Robin,22,25000,sales
+2,BOB,23,30000,sales
+3,Maya,23,25000,sales
+4,Sara,25,40000,sales
+5,David,23,45000,sales
+6,Maggy,22,35000,sales
+$ cat emp_bonus.txt
+1,Robin,22,25000,sales
+2,Jaya,23,20000,admin
+3,Maya,23,25000,sales
+4,Alia,25,50000,admin
+5,David,23,45000,sales
+6,Omar,30,30000,admin
+grunt> emp_sales = load '/home/cloudera/emp_sales.txt' using PigStorage(',') as (sno:int,name:chararray,age:int,sal:int,dept:chararray);
+grunt> describe emp_sales;
+emp_sales: {sno: int,name: chararray,age: int,sal: int,dept: chararray}
+grunt> emp_bonus = load '/home/cloudera/emp_bonus.txt' using PigStorage(',') as (sno:int,name:chararray,age:int,sal:int,dept:chararray);
+grunt> describe emp_bonus;
+emp_bonus: {sno: int,name: chararray,age: int,sal:int,dept: chararray}
+grunt> cogroup_data = cogroup emp_sales by sno,emp_bonus by sno;
+grunt> describe cogroup_data;
+cogroup_data: {group: int,emp_sales: {(sno: int,name: chararray,age: int,sal: int,dept: chararray)},emp_bonus: {(sno: int,name: chararray,age: int,sal:int,dept: chararray)}}
+grunt> dump cogroup_data;
+(1,{(1,Robin,22,25000,sales)},{(1,Robin,22,25000,sales)})
+(2,{(2,BOB,23,30000,sales)},{(2,Jaya,23,20000,admin)})
+(3,{(3,Maya,23,25000,sales)},{(3,Maya,23,25000,sales)})
+(4,{(4,Sara,25,40000,sales)},{(4,Alia,25,50000,admin)})
+(5,{(5,David,23,45000,sales)},{(5,David,23,45000,sales)})
+(6,{(6,Maggy,22,35000,sales)},{(6,Omar,30,30000,admin)})
+
+grunt> diff_ex = foreach cogroup_data generate DIFF(emp_sales,emp_bonus);
+2017-06-14 12:41:14,602 [main] INFO  org.apache.hadoop.conf.Configuration.deprecation - fs.default.name is deprecated. Instead, use fs.defaultFS
+2017-06-14 12:41:14,602 [main] INFO  org.apache.hadoop.conf.Configuration.deprecation - mapred.job.tracker is deprecated. Instead, use mapreduce.jobtracker.address
+2017-06-14 12:41:14,603 [main] INFO  org.apache.hadoop.conf.Configuration.deprecation - io.bytes.per.checksum is deprecated. Instead, use dfs.bytes-per-checksum
+grunt> describe diff_ex;
+diff_ex: {{}}
+grunt> dump diff_ex;
+({})
+({(2,BOB,23,30000,sales),(2,Jaya,23,20000,admin)})
+({})
+({(4,Sara,25,40000,sales),(4,Alia,25,50000,admin)})
+({})
+({(6,Maggy,22,35000,sales),(6,Omar,30,30000,admin)})
+
+Subtrcat:-
+
+$ cat emp_sales.txt
+1,Robin,22,25000,sales
+2,BOB,23,30000,sales
+3,Maya,23,25000,sales
+4,Sara,25,40000,sales
+5,David,23,45000,sales
+6,Maggy,22,35000,sales
+$ cat emp_bonus.txt
+1,Robin,22,25000,sales
+2,Jaya,23,20000,admin
+3,Maya,23,25000,sales
+4,Alia,25,50000,admin
+5,David,23,45000,sales
+6,Omar,30,30000,admin
+grunt> emp_sales = load '/home/cloudera/emp_sales.txt' using PigStorage(',') as (sno:int,name:chararray,age:int,sal:int,dept:chararray);
+grunt> describe emp_sales;
+emp_sales: {sno: int,name: chararray,age: int,sal: int,dept: chararray}
+grunt> emp_bonus = load '/home/cloudera/emp_bonus.txt' using PigStorage(',') as (sno:int,name:chararray,age:int,sal:int,dept:chararray);
+grunt> describe emp_bonus;
+emp_bonus: {sno: int,name: chararray,age: int,sal:int,dept: chararray}
+grunt> cogroup_data = cogroup emp_sales by sno,emp_bonus by sno;
+grunt> describe cogroup_data;
+cogroup_data: {group: int,emp_sales: {(sno: int,name: chararray,age: int,sal: int,dept: chararray)},emp_bonus: {(sno: int,name: chararray,age: int,sal:int,dept: chararray)}}
+grunt> dump cogroup_data;
+(1,{(1,Robin,22,25000,sales)},{(1,Robin,22,25000,sales)})
+(2,{(2,BOB,23,30000,sales)},{(2,Jaya,23,20000,admin)})
+(3,{(3,Maya,23,25000,sales)},{(3,Maya,23,25000,sales)})
+(4,{(4,Sara,25,40000,sales)},{(4,Alia,25,50000,admin)})
+(5,{(5,David,23,45000,sales)},{(5,David,23,45000,sales)})
+(6,{(6,Maggy,22,35000,sales)},{(6,Omar,30,30000,admin)})
+
+grunt> subtract_ex = foreach cogroup_data generate SUBTRACT(emp_sales,emp_bonus);
+grunt> describe subtract_ex;
+subtract_ex: {{}}
+grunt> dump subtract_ex;
+
+({})
+({(2,BOB,23,30000,sales)})
+({})
+({(4,Sara,25,40000,sales)})
+({})
+({(6,Maggy,22,35000,sales)})
