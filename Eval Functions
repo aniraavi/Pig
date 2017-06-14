@@ -326,3 +326,77 @@ grunt> dump subtract_ex;
 ({(4,Sara,25,40000,sales)})
 ({})
 ({(6,Maggy,22,35000,sales)})
+
+Concat:-
+$ tail user_detail.txt
+991     Raymond Griffin rgriffinri@epa.gov      Male    52.161.134.75
+992     Brian   Lawrence        blawrencerj@smh.com.au  Male    249.225.230.253
+993     Kathleen        White   kwhiterk@abc.net.au     Female  159.92.105.107
+994     Anna    Barnes  abarnesrl@typepad.com   Female  105.134.105.11
+995     Arthur  Taylor  ataylorrm@reddit.com    Male    201.212.123.246
+996     Kelly   Gardner kgardnerrn@hao123.com   Female  125.130.178.95
+997     Amy     Davis   adavisro@latimes.com    Female  98.7.143.41
+998     Gloria  Allen   gallenrp@posterous.com  Female  193.238.107.148
+999     Eugene  Gomez   egomezrq@dot.gov        Male    230.68.115.35
+1000    Steve   Sanchez ssanchezrr@chicagotribune.com   Male    131.16.243.0
+grunt> user = load '/home/cloudera/user_detail.txt' using PigStorage('\t') as (id:int,fname:chararray,lname:chararray,email:chararray,gender:chararray,ip:chararray);
+grunt> describe user;
+user: {id: int,fname: chararray,lname: chararray,email: chararray,gender: chararray,ip: chararray}
+grunt> concat_ex = foreach user generate CONCAT(fname,' ',lname) as name,email;
+grunt> describe concat_ex;
+concat_ex: {name: chararray,email: chararray}
+grunt> limit_op = limit concat_ex 3;
+grunt> dump limit_op;
+(Ann Marshall,amarshall0@hud.gov)
+(Paul Griffin,pgriffin1@people.com.cn)
+(Evelyn Cooper,ecooper2@indiegogo.com)
+
+Size:-
+
+$ cat emp_sales.txt
+1,Robin,22,25000,sales
+2,BOB,23,30000,sales
+3,Maya,23,25000,sales
+4,Sara,25,40000,sales
+5,David,23,45000,sales
+6,Maggy,22,35000,sales
+grunt> emp_sales = load '/home/cloudera/emp_sales.txt' using PigStorage(',') as (sno:int,name:chararray,age:int,sal:int,dept:chararray);
+grunt> describe emp_sales;
+emp_sales: {sno: int,name: chararray,age: int,sal: int,dept: chararray}
+grunt> name_size = foreach emp_sales generate name,SIZE(name) as name_langth;
+grunt> describe name_size;
+name_size: {name: chararray,name_langth: long}
+grunt> dump name_size;
+(Robin,5)
+(BOB,3)
+(Maya,4)
+(Sara,4)
+(David,5)
+(Maggy,5)
+
+Tokenize:-
+
+$ cat student.txt
+001,Rajiv Reddy,21,Hyderabad
+002,siddarth Battacharya,22,Kolkata
+003,Rajesh Khanna,22,Delhi
+004,Preethi Agarwal,21,Pune
+005,Trupthi Mohanthy,23,Bhuwaneshwar
+006,Archana Mishra,23 ,Chennai
+007,Komal Nayak,24,trivendram
+008,Bharathi Nambiayar,24,Chennai
+grunt> std = load '/home/cloudera/student.txt' using PigStorage(',') as (id:int,name:chararray,age:int,city:chararray);
+grunt> describe std;
+std: {id: int,name: chararray,age: int,city: chararray}
+grunt> tokenize_name = foreach std generate name,TOKENIZE(name,' ');
+grunt> describe tokenize_name;
+tokenize_name: {name: chararray,bag_of_tokenTuples_from_name: {tuple_of_tokens: (token: chararray)}}
+grunt> dump tokenize_name;
+(Rajiv Reddy,{(Rajiv),(Reddy)})
+(siddarth Battacharya,{(siddarth),(Battacharya)})
+(Rajesh Khanna,{(Rajesh),(Khanna)})
+(Preethi Agarwal,{(Preethi),(Agarwal)})
+(Trupthi Mohanthy,{(Trupthi),(Mohanthy)})
+(Archana Mishra,{(Archana),(Mishra)})
+(Komal Nayak,{(Komal),(Nayak)})
+(Bharathi Nambiayar,{(Bharathi),(Nambiayar)})
