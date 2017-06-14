@@ -1,0 +1,533 @@
+STARTSWITH:- Accepts two string parameters and verifies whether the first string strats with the second.
+
+$ cat emp.txt
+001,Robin,22,newyork
+002,BOB,23,Kolkata
+003,Maya,23,Tokyo
+004,Sara,25,London
+005,David,23,Bhuwaneshwar
+006,Maggy,22,Chennai
+007,Robert,22,newyork
+008,Syam,23,Kolkata
+009,Mary,25,Tokyo
+010,Saran,25,London
+011,Stacy,25,Bhuwaneshwar
+012,Kelly,22,Chennai
+grunt> emp = load '/home/cloudera/emp.txt' using PigStorage(',') as (id:int,name:chararray,age:int,city:chararray);
+grunt> describe emp;
+emp: {id: int,name: chararray,age: int,city: chararray}
+grunt> starts_with_Sa = foreach emp generate name,STARTSWITH(name,'Sa');
+grunt> describe starts_with_Sa;
+starts_with_Sa: {name: chararray,boolean}
+grunt> dump starts_with_Sa'
+(Robin,false)
+(BOB,false)
+(Maya,false)
+(Sara,true)
+(David,false)
+(Maggy,false)
+(Robert,false)
+(Syam,false)
+(Mary,false)
+(Saran,true)
+(Stacy,false)
+(Kelly,false)
+
+ENDSWITH:- Verifies whether the given string ends with a particular substring.
+
+$ cat emp.txt
+001,Robin,22,newyork
+002,BOB,23,Kolkata
+003,Maya,23,Tokyo
+004,Sara,25,London
+005,David,23,Bhuwaneshwar
+006,Maggy,22,Chennai
+007,Robert,22,newyork
+008,Syam,23,Kolkata
+009,Mary,25,Tokyo
+010,Saran,25,London
+011,Stacy,25,Bhuwaneshwar
+012,Kelly,22,Chennai
+grunt> emp = load '/home/cloudera/emp.txt' using PigStorage(',') as (id:int,name:chararray,age:int,city:chararray);
+grunt> describe emp;
+emp: {id: int,name: chararray,age: int,city: chararray}
+grunt> ends_with_ya = foreach emp generate name,ENDSWITH(name,'ya');
+grunt> describe ends_with_ya;
+ends_with_ya: {name: chararray,boolean}
+grunt> dump ends_with_ya;
+(Robin,false)
+(BOB,false)
+(Maya,true)
+(Sara,false)
+(David,false)
+(Maggy,false)
+(Robert,false)
+(Syam,false)
+(Mary,false)
+(Saran,false)
+(Stacy,false)
+(Kelly,false)
+
+SUBSTRING:- Returns substring from the given string
+$ cat emp.txt
+001,Robin,22,newyork
+002,BOB,23,Kolkata
+003,Maya,23,Tokyo
+004,Sara,25,London
+005,David,23,Bhuwaneshwar
+006,Maggy,22,Chennai
+007,Robert,22,newyork
+008,Syam,23,Kolkata
+009,Mary,25,Tokyo
+010,Saran,25,London
+011,Stacy,25,Bhuwaneshwar
+012,Kelly,22,Chennai
+grunt> emp = load '/home/cloudera/emp.txt' using PigStorage(',') as (id:int,name:chararray,age:int,city:chararray);
+grunt> describe emp;
+emp: {id: int,name: chararray,age: int,city: chararray}
+grunt> substr = foreach emp generate city,SUBSTRING(city,0,3);
+grunt> describe substr;
+substr: {city: chararray,chararray}
+grunt> dump substr;
+(newyork,new)
+(Kolkata,Kol)
+(Tokyo,Tok)
+(London,Lon)
+(Bhuwaneshwar,Bhu)
+(Chennai,Che)
+(newyork,new)
+(Kolkata,Kol)
+(Tokyo,Tok)
+(London,Lon)
+(Bhuwaneshwar,Bhu)
+(Chennai,Che)
+
+EqualsIgnoreCase:- compares two string and verifies whether they are eqaul. If equal returns true lese false.
+]$ cat emp.txt
+001,Robin,22,newyork
+002,BOB,23,Kolkata
+003,Maya,23,Tokyo
+004,Sara,25,London
+005,David,23,Bhuwaneshwar
+006,Maggy,22,Chennai
+007,Robert,22,newyork
+008,Syam,23,Kolkata
+009,Mary,25,Tokyo
+010,Saran,25,London
+011,Stacy,25,Bhuwaneshwar
+012,Kelly,22,Chennai
+grunt> emp = load '/home/cloudera/emp.txt' using PigStorage(',') as (id:int,name:chararray,age:int,city:chararray);
+grunt> describe emp;
+emp: {id: int,name: chararray,age: int,city: chararray}
+grunt> find_syam = foreach emp generate name,city,EqualsIgnoreCase(name,'Syam');
+grunt> describe find_syam;
+find_syam: {name: chararray,city: chararray,boolean}
+grunt> dump find_syam;
+(Robin,newyork,false)
+(BOB,Kolkata,false)
+(Maya,Tokyo,false)
+(Sara,London,false)
+(David,Bhuwaneshwar,false)
+(Maggy,Chennai,false)
+(Robert,newyork,false)
+(Syam,Kolkata,true)
+(Mary,Tokyo,false)
+(Saran,London,false)
+(Stacy,Bhuwaneshwar,false)
+(Kelly,Chennai,false)
+
+INDEXOF:- Function accepts a string value,a character and index.Returns the first occurance of the given charcter in the string searching forward from the given string.
+]$ cat emp.txt
+001,Robin,22,newyork
+002,BOB,23,Kolkata
+003,Maya,23,Tokyo
+004,Sara,25,London
+005,David,23,Bhuwaneshwar
+006,Maggy,22,Chennai
+007,Robert,22,newyork
+008,Syam,23,Kolkata
+009,Mary,25,Tokyo
+010,Saran,25,London
+011,Stacy,25,Bhuwaneshwar
+012,Kelly,22,Chennai
+grunt> emp = load '/home/cloudera/emp.txt' using PigStorage(',') as (id:int,name:chararray,age:int,city:chararray);
+grunt> describe emp;
+emp: {id: int,name: chararray,age: int,city: chararray}
+grunt> check_index_of_a = foreach emp generate name,INDEXOF(name,'a',0);
+grunt> describe check_index_of_a;
+check_index_of_a: {name: chararray,int}
+grunt> dump check_index_of_a;
+(Robin,-1)
+(BOB,-1)
+(Maya,1)
+(Sara,1)
+(David,1)
+(Maggy,1)
+(Robert,-1)
+(Syam,2)
+(Mary,1)
+(Saran,1)
+(Stacy,2)
+(Kelly,-1)
+
+LAST_INDEX_OF:- Searches for last occurance of a charcter in the given strng
+$ cat emp.txt
+001,Robin,22,newyork
+002,BOB,23,Kolkata
+003,Maya,23,Tokyo
+004,Sara,25,London
+005,David,23,Bhuwaneshwar
+006,Maggy,22,Chennai
+007,Robert,22,newyork
+008,Syam,23,Kolkata
+009,Mary,25,Tokyo
+010,Saran,25,London
+011,Stacy,25,Bhuwaneshwar
+012,Kelly,22,Chennai
+grunt> emp = load '/home/cloudera/emp.txt' using PigStorage(',') as (id:int,name:chararray,age:int,city:chararray);
+grunt> describe emp;
+emp: {id: int,name: chararray,age: int,city: chararray}
+grunt> last_index_of_a = foreach emp generate name,LAST_INDEX_OF(name,'a');
+grunt> describe last_index_of_a;
+last_index_of_a: {name: chararray,int}
+grunt> dump last_index_of_a;
+(Robin,-1)
+(BOB,-1)
+(Maya,3)
+(Sara,3)
+(David,1)
+(Maggy,1)
+(Robert,-1)
+(Syam,2)
+(Mary,1)
+(Saran,3)
+(Stacy,2)
+(Kelly,-1)
+
+LCFIRST:- Coverts the first character of the string into lower case.
+$ cat emp.txt
+001,Robin,22,newyork
+002,BOB,23,Kolkata
+003,Maya,23,Tokyo
+004,Sara,25,London
+005,David,23,Bhuwaneshwar
+006,Maggy,22,Chennai
+007,Robert,22,newyork
+008,Syam,23,Kolkata
+009,Mary,25,Tokyo
+010,Saran,25,London
+011,Stacy,25,Bhuwaneshwar
+012,Kelly,22,Chennai
+
+grunt> emp = load '/home/cloudera/emp.txt' using PigStorage(',') as (id:int,name:chararray,age:int,city:chararray);
+grunt> describe emp;
+emp: {id: int,name: chararray,age: int,city: chararray}
+grunt> lcfirst = foreach emp generate name,LCFIRST(name);
+grunt> describe lcfirst;
+lcfirst: {name: chararray,chararray}
+grunt> dump lcfirst;
+(Robin,robin)
+(BOB,bOB)
+(Maya,maya)
+(Sara,sara)
+(David,david)
+(Maggy,maggy)
+(Robert,robert)
+(Syam,syam)
+(Mary,mary)
+(Saran,saran)
+(Stacy,stacy)
+(Kelly,kelly)
+
+UCFIRST:- Coverts the first character of the string into upper case.
+$ cat emp.txt
+001,Robin,22,newyork
+002,BOB,23,Kolkata
+003,Maya,23,Tokyo
+004,Sara,25,London
+005,David,23,Bhuwaneshwar
+006,Maggy,22,Chennai
+007,Robert,22,newyork
+008,Syam,23,Kolkata
+009,Mary,25,Tokyo
+010,Saran,25,London
+011,Stacy,25,Bhuwaneshwar
+012,Kelly,22,Chennai
+
+grunt> emp = load '/home/cloudera/emp.txt' using PigStorage(',') as (id:int,name:chararray,age:int,city:chararray);
+grunt> describe emp;
+emp: {id: int,name: chararray,age: int,city: chararray}
+grunt> ucfirst = foreach emp generate city,UCFIRST(city);
+grunt> describe ucfirst;
+ucfirst: {city: chararray,chararray}
+grunt> dump ucfirst;
+(newyork,Newyork)
+(Kolkata,Kolkata)
+(Tokyo,Tokyo)
+(London,London)
+(Bhuwaneshwar,Bhuwaneshwar)
+(Chennai,Chennai)
+(newyork,Newyork)
+(Kolkata,Kolkata)
+(Tokyo,Tokyo)
+(London,London)
+(Bhuwaneshwar,Bhuwaneshwar)
+(Chennai,Chennai)
+
+UPPER:- Converts all the characters in string to upper case.
+$ cat emp.txt
+001,Robin,22,newyork
+002,BOB,23,Kolkata
+003,Maya,23,Tokyo
+004,Sara,25,London
+005,David,23,Bhuwaneshwar
+006,Maggy,22,Chennai
+007,Robert,22,newyork
+008,Syam,23,Kolkata
+009,Mary,25,Tokyo
+010,Saran,25,London
+011,Stacy,25,Bhuwaneshwar
+012,Kelly,22,Chennai
+
+grunt> emp = load '/home/cloudera/emp.txt' using PigStorage(',') as (id:int,name:chararray,age:int,city:chararray);
+grunt> describe emp;
+emp: {id: int,name: chararray,age: int,city: chararray}
+grunt> name_upper = foreach emp generate name,UPPER(name) as name_in_uppercase;
+grunt> describe name_upper;
+name_upper: {name: chararray,name_in_uppercase: chararray}
+grunt> dump name_upper;
+(Robin,ROBIN)
+(BOB,BOB)
+(Maya,MAYA)
+(Sara,SARA)
+(David,DAVID)
+(Maggy,MAGGY)
+(Robert,ROBERT)
+(Syam,SYAM)
+(Mary,MARY)
+(Saran,SARAN)
+(Stacy,STACY)
+(Kelly,KELLY)
+
+LOWER:- converts all the characters in the string into lower case.
+]$ cat emp.txt
+001,Robin,22,newyork
+002,BOB,23,Kolkata
+003,Maya,23,Tokyo
+004,Sara,25,London
+005,David,23,Bhuwaneshwar
+006,Maggy,22,Chennai
+007,Robert,22,newyork
+008,Syam,23,Kolkata
+009,Mary,25,Tokyo
+010,Saran,25,London
+011,Stacy,25,Bhuwaneshwar
+012,Kelly,22,Chennai
+grunt> emp = load '/home/cloudera/emp.txt' using PigStorage(',') as (id:int,name:chararray,age:int,city:chararray);
+grunt> describe emp;
+emp: {id: int,name: chararray,age: int,city: chararray}
+grunt> name_lower = foreach emp generate name,LOWER(name) name_in_lowercase;
+2017-06-14 14:34:10,884 [main] ERROR org.apache.pig.tools.grunt.Grunt - ERROR 1200: <line 81, column 51>  mismatched input 'name_in_lowercase' expecting SEMI_COLON
+Details at logfile: /home/cloudera/pig_1497464881078.log
+grunt> name_lower = foreach emp generate name,LOWER(name) as name_in_lowercase;
+grunt> describe name_lower;
+name_lower: {name: chararray,name_in_lowercase: chararray}
+grunt> dump name_lower;
+(Robin,robin)
+(BOB,bob)
+(Maya,maya)
+(Sara,sara)
+(David,david)
+(Maggy,maggy)
+(Robert,robert)
+(Syam,syam)
+(Mary,mary)
+(Saran,saran)
+(Stacy,stacy)
+(Kelly,kelly)
+
+Replace:- Replaces all the chracters in the given string with the new characters.
+$ cat emp.txt
+001,Robin,22,newyork
+002,BOB,23,Kolkata
+003,Maya,23,Tokyo
+004,Sara,25,London
+005,David,23,Bhuwaneshwar
+006,Maggy,22,Chennai
+007,Robert,22,newyork
+008,Syam,23,Kolkata
+009,Mary,25,Tokyo
+010,Saran,25,London
+011,Stacy,25,Bhuwaneshwar
+012,Kelly,22,Chennai
+grunt> emp = load '/home/cloudera/emp.txt' using PigStorage(',') as (id:int,name:chararray,age:int,city:chararray);
+grunt> describe emp;
+emp: {id: int,name: chararray,age: int,city: chararray}
+grunt> replace_city = foreach emp generate name,city,REPLACE(city,'newyork','Newyork');
+grunt> describe replace_city;
+replace_city: {name: chararray,city: chararray,chararray}
+grunt> dump replace_city;
+(Robin,newyork,Newyork)
+(BOB,Kolkata,Kolkata)
+(Maya,Tokyo,Tokyo)
+(Sara,London,London)
+(David,Bhuwaneshwar,Bhuwaneshwar)
+(Maggy,Chennai,Chennai)
+(Robert,newyork,Newyork)
+(Syam,Kolkata,Kolkata)
+(Mary,Tokyo,Tokyo)
+(Saran,London,London)
+(Stacy,Bhuwaneshwar,Bhuwaneshwar)
+(Kelly,Chennai,Chennai)
+
+STRSPLIT:- Splits a given string by given delimiter
+$cat new_emp.txt
+001,Robin_Smith,22,newyork
+002,BOB_Wilson,23,Kolkata
+003,Maya_Reddy,23,Tokyo
+004,Sara_Jain,25,London
+005,David_Miller,23,Bhuwaneshwar
+006,Maggy_Moore,22,Chennai
+007,Robert_Scott,22,newyork
+008,Syam_Ketavarapu,23,Kolkata
+009,Mary_Carter,25,Tokyo
+010,Saran_Naidu,25,London
+011,Stacy_Green,25,Bhuwaneshwar
+012,Kelly_Moore,22,Chennai
+grunt> emp = load '/home/cloudera/new_emp.txt' using PigStorage(',') as (id:int,name:chararray,age:int,city:chararray);
+grunt> describe emp;
+emp: {id: int,name: chararray,age: int,city: chararray}
+grunt> name_split = foreach emp generate name,STRSPLIT(name,'_',2);
+grunt> describe name_split;
+name_split: {name: chararray,()}
+grunt> dump name_split;
+(Robin_Smith,(Robin,Smith))
+(BOB_Wilson,(BOB,Wilson))
+(Maya_Reddy,(Maya,Reddy))
+(Sara_Jain,(Sara,Jain))
+(David_Miller,(David,Miller))
+(Maggy_Moore,(Maggy,Moore))
+(Robert_Scott,(Robert,Scott))
+(Syam_Ketavarapu,(Syam,Ketavarapu))
+(Mary_Carter,(Mary,Carter))
+(Saran_Naidu,(Saran,Naidu))
+(Stacy_Green,(Stacy,Green))
+(Kelly_Moore,(Kelly,Moore))
+
+Trim:- removes unwanted spaces from the string 
+$ cat new_emp.txt
+001,  Robin_Smith ,22,newyork
+002, BOB_Wilson ,23,Kolkata
+003, Maya_Reddy  ,23,Tokyo
+004,Sara_Jain  ,25,London
+005,  David_Miller,23,Bhuwaneshwar
+006, Maggy_Moore,22,Chennai
+007,Robert_Scott   ,22,newyork
+008,Syam_Ketavarapu  ,23,Kolkata
+009,  Mary_Carter,25,Tokyo
+010, Saran_Naidu,25,London
+011,Stacy_Green ,25,Bhuwaneshwar
+012, Kelly_Moore ,22,Chennai
+
+grunt> emp = load '/home/cloudera/new_emp.txt' using PigStorage(',') as (id:int,name:chararray,age:int,city:chararray);
+grunt> describe emp;
+emp: {id: int,name: chararray,age: int,city: chararray}
+grunt> trim_spaces = foreach emp generate id,name,TRIM(name) as name_without_spaces;
+grunt> describe trim_spaces;
+trim_spaces: {id: int,name: chararray,name_without_spaces: chararray}
+grunt> dump trim_spaces;
+
+(1,  Robin_Smith ,Robin_Smith)
+(2, BOB_Wilson ,BOB_Wilson)
+(3, Maya_Reddy  ,Maya_Reddy)
+(4,Sara_Jain  ,Sara_Jain)
+(5,  David_Miller,David_Miller)
+(6, Maggy_Moore,Maggy_Moore)
+(7,Robert_Scott   ,Robert_Scott)
+(8,Syam_Ketavarapu  ,Syam_Ketavarapu)
+(9,  Mary_Carter,Mary_Carter)
+(10, Saran_Naidu,Saran_Naidu)
+(11,Stacy_Green ,Stacy_Green)
+(12, Kelly_Moore ,Kelly_Moore)
+
+
+LTrim:- removes unwanted spaces from theleft side of the string 
+$ cat new_emp.txt
+001,  Robin_Smith ,22,newyork
+002, BOB_Wilson ,23,Kolkata
+003, Maya_Reddy  ,23,Tokyo
+004,Sara_Jain  ,25,London
+005,  David_Miller,23,Bhuwaneshwar
+006, Maggy_Moore,22,Chennai
+007,Robert_Scott   ,22,newyork
+008,Syam_Ketavarapu  ,23,Kolkata
+009,  Mary_Carter,25,Tokyo
+010, Saran_Naidu,25,London
+011,Stacy_Green ,25,Bhuwaneshwar
+012, Kelly_Moore ,22,Chennai
+
+grunt> emp = load '/home/cloudera/new_emp.txt' using PigStorage(',') as (id:int,name:chararray,age:int,city:chararray);
+grunt> describe emp;
+emp: {id: int,name: chararray,age: int,city: chararray}
+grunt> ltrim_spaces = foreach emp generate id,name,LTRIM(name) as name_without_spaces_on_left;
+grunt> describe trim_spaces;
+trim_spaces: {id: int,name: chararray,name_without_spaces_on_left: chararray}
+grunt> dump ltrim_spaces;
+
+(1,  Robin_Smith ,Robin_Smith )
+(2, BOB_Wilson ,BOB_Wilson )
+(3, Maya_Reddy  ,Maya_Reddy  )
+(4,Sara_Jain  ,Sara_Jain  )
+(5,  David_Miller,David_Miller)
+(6, Maggy_Moore,Maggy_Moore)
+(7,Robert_Scott   ,Robert_Scott   )
+(8,Syam_Ketavarapu  ,Syam_Ketavarapu  )
+(9,  Mary_Carter,Mary_Carter)
+(10, Saran_Naidu,Saran_Naidu)
+(11,Stacy_Green ,Stacy_Green )
+(12, Kelly_Moore ,Kelly_Moore )
+
+RTrim:- removes unwanted spaces from the right side of the string 
+$ cat new_emp.txt
+001,  Robin_Smith ,22,newyork
+002, BOB_Wilson ,23,Kolkata
+003, Maya_Reddy  ,23,Tokyo
+004,Sara_Jain  ,25,London
+005,  David_Miller,23,Bhuwaneshwar
+006, Maggy_Moore,22,Chennai
+007,Robert_Scott   ,22,newyork
+008,Syam_Ketavarapu  ,23,Kolkata
+009,  Mary_Carter,25,Tokyo
+010, Saran_Naidu,25,London
+011,Stacy_Green ,25,Bhuwaneshwar
+012, Kelly_Moore ,22,Chennai
+
+grunt> emp = load '/home/cloudera/new_emp.txt' using PigStorage(',') as (id:int,name:chararray,age:int,city:chararray);
+grunt> describe emp;
+emp: {id: int,name: chararray,age: int,city: chararray}
+grunt> rtrim_spaces = foreach emp generate id,name,RTRIM(name) as name_without_spaces_on_right;
+grunt> describe trim_spaces;
+trim_spaces: {id: int,name: chararray,name_without_spaces_on_right: chararray}
+grunt> dump rtrim_spaces;
+
+(1,  Robin_Smith ,  Robin_Smith)
+(2, BOB_Wilson , BOB_Wilson)
+(3, Maya_Reddy  , Maya_Reddy)
+(4,Sara_Jain  ,Sara_Jain)
+(5,  David_Miller,  David_Miller)
+(6, Maggy_Moore, Maggy_Moore)
+(7,Robert_Scott   ,Robert_Scott)
+(8,Syam_Ketavarapu  ,Syam_Ketavarapu)
+(9,  Mary_Carter,  Mary_Carter)
+(10, Saran_Naidu, Saran_Naidu)
+(11,Stacy_Green ,Stacy_Green)
+(12, Kelly_Moore , Kelly_Moore)
+
+
+
+
+
+
+
+
+
