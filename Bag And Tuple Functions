@@ -1,0 +1,130 @@
+TOBAG:- Converts two or more expressions to Bag
+
+$ head -2 user_detail.txt
+1       Ann     Marshall        amarshall0@hud.gov      Female  224.150.106.241
+2       Paul    Griffin pgriffin1@people.com.cn Male    132.220.82.79
+grunt> user = load '/home/cloudera/user_detail.txt' using PigStorage('\t') as (id:int,fname:chararray,lname:chararray,email:chararray,gender:chararray,ip:chararray);
+grunt> describe user;
+user: {id: int,fname: chararray,lname: chararray,email: chararray,gender: chararray,ip: chararray}
+grunt> to_bag = foreach user generate TOBAG(fname,lname);
+grunt> describe to_bag;
+to_bag: {{(chararray)}}
+grunt> dump to_bag;
+({(Louis),(Hudson)})
+({(Raymond),(Griffin)})
+({(Brian),(Lawrence)})
+({(Kathleen),(White)})
+({(Anna),(Barnes)})
+({(Arthur),(Taylor)})
+({(Kelly),(Gardner)})
+({(Amy),(Davis)})
+({(Gloria),(Allen)})
+({(Eugene),(Gomez)})
+({(Steve),(Sanchez)})
+
+TOP:- returns the top N tuples of a Bag.
+
+$ cat emp.txt
+001,Robin,22,newyork
+002,BOB,23,Kolkata
+003,Maya,23,Tokyo
+004,Sara,25,London
+005,David,23,Bhuwaneshwar
+006,Maggy,22,Chennai
+007,Robert,22,newyork
+008,Syam,23,Kolkata
+009,Mary,25,Tokyo
+010,Saran,25,London
+011,Stacy,25,Bhuwaneshwar
+012,Kelly,22,Chennai
+grunt> emp = load '/home/cloudera/emp.txt' using PigStorage(',') as (id:int,name:chararray,age:int,city:chararray);
+grunt> describe emp;
+emp: {id: int,name: chararray,age: int,city: chararray}
+grunt> group_by_age = group emp by age;
+grunt> describe group_by_age;
+group_by_age: {group: int,emp: {(id: int,name: chararray,age: int,city: chararray)}}
+grunt> dump group_by_age;
+(22,{(12,Kelly,22,Chennai),(7,Robert,22,newyork),(6,Maggy,22,Chennai),(1,Robin,22,newyork)})
+(23,{(8,Syam,23,Kolkata),(5,David,23,Bhuwaneshwar),(3,Maya,23,Tokyo),(2,BOB,23,Kolkata)})
+(25,{(11,Stacy,25,Bhuwaneshwar),(10,Saran,25,London),(9,Mary,25,Tokyo),(4,Sara,25,London)})
+grunt> top_2 = foreach group_by_age {top = TOP(1,0,emp); generate top;};
+grunt> describe top_2;
+top_2: {emp: {(id: int,name: chararray,age: int,city: chararray)}}
+grunt> dump top_2;
+({(12,Kelly,22,Chennai)})
+({(8,Syam,23,Kolkata)})
+({(11,Stacy,25,Bhuwaneshwar)})
+grunt> top_2 = foreach group_by_age {top = TOP(1,1,emp); generate top;};
+({(1,Robin,22,newyork)})
+({(8,Syam,23,Kolkata)})
+({(11,Stacy,25,Bhuwaneshwar)})
+
+TOTUPLE:- Converts one or more expressions into a tuple
+
+]$ cat emp.txt
+001,Robin,22,newyork
+002,BOB,23,Kolkata
+003,Maya,23,Tokyo
+004,Sara,25,London
+005,David,23,Bhuwaneshwar
+006,Maggy,22,Chennai
+007,Robert,22,newyork
+008,Syam,23,Kolkata
+009,Mary,25,Tokyo
+010,Saran,25,London
+011,Stacy,25,Bhuwaneshwar
+012,Kelly,22,Chennai
+grunt> emp = load '/home/cloudera/emp.txt' using PigStorage(',') as (id:int,name:chararray,age:int,city:chararray);
+grunt> describe emp;
+emp: {id: int,name: chararray,age: int,city: chararray}
+grunt> to_tuple = foreach emp generate TOTUPLE(id,name,city);
+grunt> describe to_tuple;
+to_tuple: {org.apache.pig.builtin.totuple_id_13061: (id: int,name: chararray,city: chararray)}
+grunt> dump to_tuple;
+((1,Robin,newyork))
+((2,BOB,Kolkata))
+((3,Maya,Tokyo))
+((4,Sara,London))
+((5,David,Bhuwaneshwar))
+((6,Maggy,Chennai))
+((7,Robert,newyork))
+((8,Syam,Kolkata))
+((9,Mary,Tokyo))
+((10,Saran,London))
+((11,Stacy,Bhuwaneshwar))
+((12,Kelly,Chennai))
+
+TOMAP:- Coverts Key-Value pairs into a map.
+$ cat emp.txt
+001,Robin,22,newyork
+002,BOB,23,Kolkata
+003,Maya,23,Tokyo
+004,Sara,25,London
+005,David,23,Bhuwaneshwar
+006,Maggy,22,Chennai
+007,Robert,22,newyork
+008,Syam,23,Kolkata
+009,Mary,25,Tokyo
+010,Saran,25,London
+011,Stacy,25,Bhuwaneshwar
+012,Kelly,22,Chennai
+grunt> emp = load '/home/cloudera/emp.txt' using PigStorage(',') as (id:int,name:chararray,age:int,city:chararray);
+grunt> describe emp;
+emp: {id: int,name: chararray,age: int,city: chararray}
+grunt> to_map = foreach emp generate TOMAP(name,age);
+grunt> describe to_map;
+to_map: {map[]}
+grunt> dump to_map;
+([Robin#22])
+([BOB#23])
+([Maya#23])
+([Sara#25])
+([David#23])
+([Maggy#22])
+([Robert#22])
+([Syam#23])
+([Mary#25])
+([Saran#25])
+([Stacy#25])
+([Kelly#22])
+
